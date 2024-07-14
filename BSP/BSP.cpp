@@ -1,83 +1,16 @@
 // BSP.cpp : Este archivo contiene la función "main". La ejecución del programa comienza y termina ahí.
 //
 
+#include "Coordinate.h"
+#include "Node.h"
+#include "Tree.h"
+
+#include <chrono>
 #include <iostream>
 #include <vector>
 #include <random>
 
 using namespace std;
-
-class Coordinate
-{
-public:
-    Coordinate(int x, int y) : x(x), y(y) {};
-    int x;
-    int y;
-};
-
-class Rectangle
-{
-public:
-    Rectangle(Coordinate origin, int height, int width) : origin(origin), height(height), width(width) {};
-    Coordinate origin;
-    int height;
-    int width;
-};
-
-class Node
-{
-public:
-    Node(Rectangle rectangle) : rectangle(rectangle), room(rectangle), left(nullptr), right(nullptr) {};
-    Rectangle rectangle;
-    Rectangle room;
-    Node* left;
-    Node* right;
-};
-
-
-void partition(Node* node, int depth, int max_depth) {
-    if (depth == max_depth) {
-        return;
-    }
-
-    random_device rd;
-    mt19937 gen(rd());
-
-    bool vertical = depth % 2 == 0;
-
-    if (vertical) {
-
-        int half_height = node->rectangle.height / 2;
-        int percent_height = node->rectangle.height * 20 / 100;
-        uniform_int_distribution<> height_threshold(half_height - percent_height, half_height + percent_height);
-        int random_height = height_threshold(gen);
-
-        Rectangle left_rectangle(node->rectangle.origin, random_height, node->rectangle.width);
-        Rectangle right_rectangle(Coordinate(node->rectangle.origin.x, node->rectangle.origin.y + random_height), node->rectangle.height - random_height, node->rectangle.width);
-
-        node->left = new Node(left_rectangle);
-        node->right = new Node(right_rectangle);
-
-        partition(node->left, depth + 1, max_depth);
-        partition(node->right, depth + 1, max_depth);
-    }
-    else {
-
-        int half_width = node->rectangle.width / 2;
-        int percent_width = node->rectangle.width * 20 / 100;
-        uniform_int_distribution<> width_threshold(half_width - percent_width, half_width + percent_width);
-        int random_width = width_threshold(gen);
-
-        Rectangle left_rectangle(node->rectangle.origin, node->rectangle.height, random_width);
-        Rectangle right_rectangle(Coordinate(node->rectangle.origin.x + random_width, node->rectangle.origin.y), node->rectangle.height, node->rectangle.width - random_width);
-
-        node->left = new Node(left_rectangle);
-        node->right = new Node(right_rectangle);
-
-        partition(node->left, depth + 1, max_depth);
-        partition(node->right, depth + 1, max_depth);
-    }
-}
 
 void collect_leaves(Node* root, vector<Node*>& leaves) {
     if (root == nullptr) {
@@ -123,19 +56,7 @@ void generate_room_for_leaves(vector<Node*>& leaves) {
 }
 
 void debug_rectangle_areas(vector<vector<char>>& canvas, vector<Node*> leaves) {
-    
-    vector<char> alphabet = {
-        'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
-        'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
-        'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D',
-        'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
-        'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X',
-        'Y', 'Z', '0', '1', '2', '3', '4', '5', '6', '7',
-        '8', '9', '!', '@', '#', '$'
-    };
-
-
-    for (int i = 0; i < leaves.size(); i++)
+    /*for (int i = 0; i < leaves.size(); i++)
     {
         Rectangle current_rectangle = leaves[i]->rectangle;
 
@@ -148,7 +69,7 @@ void debug_rectangle_areas(vector<vector<char>>& canvas, vector<Node*> leaves) {
                 }
             }
         }
-    }
+    }*/
 
     for (int i = 0; i < leaves.size(); i++)
     {
@@ -159,7 +80,7 @@ void debug_rectangle_areas(vector<vector<char>>& canvas, vector<Node*> leaves) {
             for (int k = current_rectangle.origin.x; k < current_rectangle.origin.x + current_rectangle.width; k++)
             {
                 if (j == current_rectangle.origin.y || k == current_rectangle.origin.x || j == current_rectangle.origin.y + current_rectangle.height - 1 || k == current_rectangle.origin.x + current_rectangle.width - 1) {
-                    canvas[j][k] = alphabet[i];
+                    canvas[j][k] = '#';
                 }
             }
         }
@@ -187,18 +108,23 @@ void debug_rectangles(vector<Node*> leaves) {
 
 int main()
 {
-    int height = 72;
-    int width = 240;
+    using std::chrono::high_resolution_clock;
+    using std::chrono::duration_cast;
+    using std::chrono::duration;
+    using std::chrono::milliseconds;
 
-    Rectangle rectangle(Coordinate(0, 0), height, width);
+    auto t1 = high_resolution_clock::now();
 
-    Node node(rectangle);
+    int height = 60;
+    int width = 180;
 
-    partition(&node, 0, 3);
+    Tree tree(Node(Rectangle(Coordinate(0, 0), height, width)));
+
+    tree.partition(&tree.root, 0, 3);
 
     vector<Node*> leaves;
 
-    collect_leaves(&node, leaves);
+    collect_leaves(&tree.root, leaves);
 
     generate_room_for_leaves(leaves);
 
@@ -208,6 +134,14 @@ int main()
     debug_rectangles(leaves);
     cout << endl;
     draw_canvas(canvas);
+    auto t2 = high_resolution_clock::now();
+
+    auto ms_int = duration_cast<milliseconds>(t2 - t1);
+
+    duration<double, std::milli> ms_double = t2 - t1;
+
+    cout << ms_int.count() << "ms\n";
+    cout << ms_double.count() << "ms\n";
 }
 
 // Ejecutar programa: Ctrl + F5 o menú Depurar > Iniciar sin depurar
