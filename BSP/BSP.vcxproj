@@ -130,6 +130,7 @@
     <ClCompile Include="BSP.cpp" />
     <ClCompile Include="Canvas.cpp" />
     <ClCompile Include="Coordinate.cpp" />
+    <ClCompile Include="ExectutionMeasurer.cpp" />
     <ClCompile Include="Node.cpp" />
     <ClCompile Include="RandomNumberGenerator.cpp" />
     <ClCompile Include="Rectangle.cpp" />
@@ -138,6 +139,7 @@
   <ItemGroup>
     <ClInclude Include="Canvas.h" />
     <ClInclude Include="Coordinate.h" />
+    <ClInclude Include="ExecutionMeasurer.h" />
     <ClInclude Include="Node.h" />
     <ClInclude Include="RandomNumberGenerator.h" />
     <ClInclude Include="Rectangle.h" />

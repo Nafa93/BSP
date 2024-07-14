@@ -5,22 +5,15 @@
 #include "Node.h"
 #include "Tree.h"
 #include "Canvas.h"
-
-#include <chrono>
-#include <iostream>
-#include <vector>
-#include <random>
+#include "ExecutionMeasurer.h"
 
 using namespace std;
 
 int main()
 {
-    using std::chrono::high_resolution_clock;
-    using std::chrono::duration_cast;
-    using std::chrono::duration;
-    using std::chrono::milliseconds;
+    ExecutionMeasurer measurer;
 
-    auto t1 = high_resolution_clock::now();
+    measurer.start();
 
     int height = 60;
     int width = 180;
@@ -33,18 +26,9 @@ int main()
 
     canvas.add_rectangles(tree.rooms);
 
-    canvas.add_rectangles(tree.areas);
-
     canvas.draw();
 
-    auto t2 = high_resolution_clock::now();
-
-    auto ms_int = duration_cast<milliseconds>(t2 - t1);
-
-    duration<double, std::milli> ms_double = t2 - t1;
-
-    cout << ms_int.count() << "ms\n";
-    cout << ms_double.count() << "ms\n";
+    measurer.stop();
 }
 
 // Ejecutar programa: Ctrl + F5 o menú Depurar > Iniciar sin depurar
