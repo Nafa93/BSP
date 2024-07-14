@@ -29,32 +29,6 @@ void collect_leaves(Node* root, vector<Node*>& leaves) {
     }
 }
 
-void generate_room_for_leaves(vector<Node*>& leaves) {
-    random_device rd;
-    mt19937 gen(rd());
-
-    for (int i = 0; i < leaves.size(); i++)
-    {
-        int half_height = leaves[i]->rectangle.height / 2;
-        int percent_height = leaves[i]->rectangle.height * 20 / 100;
-        uniform_int_distribution<> height_threshold(half_height - percent_height, half_height + percent_height);
-        int random_height = height_threshold(gen);
-
-        int half_width = leaves[i]->rectangle.width / 2;
-        int percent_width = leaves[i]->rectangle.width * 20 / 100;
-        uniform_int_distribution<> width_threshold(half_width - percent_width, half_width + percent_width);
-        int random_width = width_threshold(gen);
-
-
-        uniform_int_distribution<> x_threshold(leaves[i]->rectangle.origin.x + 1, leaves[i]->rectangle.origin.x + leaves[i]->rectangle.width - random_width - 1);
-        uniform_int_distribution<> y_threshold(leaves[i]->rectangle.origin.y + 1, leaves[i]->rectangle.origin.y + leaves[i]->rectangle.height - random_height - 1);
-        int random_x = x_threshold(gen);
-        int random_y = y_threshold(gen);
-
-        leaves[i]->room = Rectangle(Coordinate(random_x, random_y), random_height, random_width);
-    }
-}
-
 void debug_rectangle_areas(vector<vector<char>>& canvas, vector<Node*> leaves) {
     /*for (int i = 0; i < leaves.size(); i++)
     {

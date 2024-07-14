@@ -5,9 +5,9 @@
 using namespace std;
 
 void Tree::partition(Node* node, int depth, int max_depth) {
-    generate_room(node);
-
     if (depth == max_depth) {
+        generate_room(node);
+
         return;
     }
 
