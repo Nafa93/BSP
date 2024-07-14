@@ -4,6 +4,7 @@
 #include "Coordinate.h"
 #include "Node.h"
 #include "Tree.h"
+#include "Canvas.h"
 
 #include <chrono>
 #include <iostream>
@@ -11,74 +12,6 @@
 #include <random>
 
 using namespace std;
-
-void collect_leaves(Node* root, vector<Node*>& leaves) {
-    if (root == nullptr) {
-        return;
-    }
-    if (root->left == nullptr && root->right == nullptr) {
-        leaves.push_back(root);
-    }
-    else {
-        if (root->left != nullptr) {
-            collect_leaves(root->left, leaves);
-        }
-        if (root->right != nullptr) {
-            collect_leaves(root->right, leaves);
-        }
-    }
-}
-
-void debug_rectangle_areas(vector<vector<char>>& canvas, vector<Node*> leaves) {
-    /*for (int i = 0; i < leaves.size(); i++)
-    {
-        Rectangle current_rectangle = leaves[i]->rectangle;
-
-        for (int j = current_rectangle.origin.y; j < current_rectangle.origin.y + current_rectangle.height; j++)
-        {
-            for (int k = current_rectangle.origin.x; k < current_rectangle.origin.x + current_rectangle.width; k++)
-            {
-                if (j == current_rectangle.origin.y || k == current_rectangle.origin.x || j == current_rectangle.origin.y + current_rectangle.height - 1 || k == current_rectangle.origin.x + current_rectangle.width - 1) {
-                    canvas[j][k] = alphabet[i];
-                }
-            }
-        }
-    }*/
-
-    for (int i = 0; i < leaves.size(); i++)
-    {
-        Rectangle current_rectangle = leaves[i]->room;
-
-        for (int j = current_rectangle.origin.y; j < current_rectangle.origin.y + current_rectangle.height; j++)
-        {
-            for (int k = current_rectangle.origin.x; k < current_rectangle.origin.x + current_rectangle.width; k++)
-            {
-                if (j == current_rectangle.origin.y || k == current_rectangle.origin.x || j == current_rectangle.origin.y + current_rectangle.height - 1 || k == current_rectangle.origin.x + current_rectangle.width - 1) {
-                    canvas[j][k] = '#';
-                }
-            }
-        }
-    }
-}
-
-void draw_canvas(vector<vector<char>> canvas) {
-    for (int i = 0; i < canvas.size(); i++)
-    {
-        for (int j = 0; j < canvas[i].size(); j++)
-        {
-            cout << canvas[i][j];
-        }
-        cout << endl;
-    }
-}
-
-void debug_rectangles(vector<Node*> leaves) {
-    for (int i = 0; i < leaves.size(); i++)
-    {
-        printf("Rectangle n%d origin x: %d origin y: %d height: %d width: %d", i + 1, leaves[i]->rectangle.origin.x, leaves[i]->rectangle.origin.y, leaves[i]->rectangle.height, leaves[i]->rectangle.width);
-        cout << endl;
-    }
-}
 
 int main()
 {
@@ -96,18 +29,14 @@ int main()
 
     tree.partition(&tree.root, 0, 3);
 
-    vector<Node*> leaves;
+    Canvas canvas(height, width);
 
-    collect_leaves(&tree.root, leaves);
+    canvas.add_rectangles(tree.rooms);
 
-    //generate_room_for_leaves(leaves);
+    canvas.add_rectangles(tree.areas);
 
-    vector<vector<char>> canvas(height, vector<char>(width, ' '));
+    canvas.draw();
 
-    debug_rectangle_areas(canvas, leaves);
-    debug_rectangles(leaves);
-    cout << endl;
-    draw_canvas(canvas);
     auto t2 = high_resolution_clock::now();
 
     auto ms_int = duration_cast<milliseconds>(t2 - t1);
