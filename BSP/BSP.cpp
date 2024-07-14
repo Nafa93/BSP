@@ -126,7 +126,7 @@ int main()
 
     collect_leaves(&tree.root, leaves);
 
-    generate_room_for_leaves(leaves);
+    //generate_room_for_leaves(leaves);
 
     vector<vector<char>> canvas(height, vector<char>(width, ' '));
 

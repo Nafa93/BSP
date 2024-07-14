@@ -5,6 +5,8 @@
 using namespace std;
 
 void Tree::partition(Node* node, int depth, int max_depth) {
+    generate_room(node);
+
     if (depth == max_depth) {
         return;
     }
@@ -39,4 +41,20 @@ void Tree::partition(Node* node, int depth, int max_depth) {
         partition(node->left, depth + 1, max_depth);
         partition(node->right, depth + 1, max_depth);
     }
+}
+
+void Tree::generate_room(Node* node) {
+    int half_height = node->rectangle.height / 2;
+    int percent_height = node->rectangle.height * 20 / 100;
+    int random_height = rng.generate(half_height - percent_height, half_height + percent_height);
+
+    int half_width = node->rectangle.width / 2;
+    int percent_width = node->rectangle.width * 20 / 100;
+    int random_width = rng.generate(half_width - percent_width, half_width + percent_width);
+
+
+    int random_x = rng.generate(node->rectangle.origin.x + 1, node->rectangle.origin.x + node->rectangle.width - random_width - 1);
+    int random_y = rng.generate(node->rectangle.origin.y + 1, node->rectangle.origin.y + node->rectangle.height - random_height - 1);
+
+    node->room = Rectangle(Coordinate(random_x, random_y), random_height, random_width);
 }

@@ -11,4 +11,6 @@ public:
 
 private:
     RandomNumberGenerator rng;
+
+    void generate_room(Node* node);
 };
