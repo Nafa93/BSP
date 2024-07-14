@@ -12,7 +12,10 @@ public:
     Node root;
     vector<Rectangle> rooms;
     vector<Rectangle> areas;
+    vector<Rectangle> corridors;
+    vector<Node*> leaves;
 
+    void generate_corridor(Node* origin, Node* end);
 private:
     RandomNumberGenerator rng;
 

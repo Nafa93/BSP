@@ -20,11 +20,15 @@ int main()
 
     Tree tree(Node(Rectangle(Coordinate(0, 0), height, width)));
 
-    tree.partition(&tree.root, 0, 3);
+    tree.partition(&tree.root, 0, 1);
+
+    tree.generate_corridor(tree.leaves[0], tree.leaves[1]);
 
     Canvas canvas(height, width);
 
     canvas.add_rectangles(tree.rooms);
+
+    canvas.add_rectangles(tree.corridors);
 
     canvas.draw();
 

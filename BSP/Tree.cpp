@@ -1,6 +1,7 @@
 #include "Tree.h"
 
 #include <random>
+#include <iostream>
 
 using namespace std;
 
@@ -10,6 +11,7 @@ void Tree::partition(Node* node, int depth, int max_depth) {
     if (depth == max_depth) {
         generate_room(node);
         rooms.push_back(node->room);
+        leaves.push_back(node);
         return;
     }
 
@@ -59,4 +61,54 @@ void Tree::generate_room(Node* node) {
     int random_y = rng.generate(node->rectangle.origin.y + 1, node->rectangle.origin.y + node->rectangle.height - random_height - 1);
 
     node->room = Rectangle(Coordinate(random_x, random_y), random_height, random_width);
+}
+
+void Tree::generate_corridor(Node* origin, Node* end)
+{
+    bool is_vertical_split = origin->rectangle.origin.x == end->rectangle.origin.x;
+
+    if (is_vertical_split) {
+        Node* top_node;
+        Node* bottom_node;
+
+        if (origin->rectangle.origin.y < end->rectangle.origin.y) {
+            top_node = origin;
+            bottom_node = end;
+        }
+        else {
+            top_node = end;
+            bottom_node = origin;
+        }
+
+        int top_node_wall_x_start = top_node->room.origin.x;
+        int top_node_wall_x_end = top_node->room.origin.x + top_node->room.width;
+        int top_node_wall_y = top_node->room.origin.y + top_node->room.height;
+
+        int bottom_node_wall_x_start = bottom_node->room.origin.x;
+        int bottom_node_wall_x_end = bottom_node->room.origin.x + bottom_node->room.width;
+        int bottom_node_wall_y = bottom_node->room.origin.y;
+
+        int top_node_wall_width = top_node_wall_x_end - top_node_wall_x_start;
+        int bottom_node_wall_width = bottom_node_wall_x_end - bottom_node_wall_x_start;
+
+        int corridor_start;
+
+        if (top_node_wall_x_start > bottom_node_wall_x_start) {
+            corridor_start = rng.generate(top_node_wall_x_start, bottom_node_wall_x_end);
+        }
+        else if (top_node_wall_x_start < bottom_node_wall_x_start) {
+            corridor_start = rng.generate(bottom_node_wall_x_start, top_node_wall_x_end);
+        }
+        else {
+            // z shaped corridor
+            corridor_start = 0;
+        }
+
+        int corridor_height = bottom_node_wall_y - top_node_wall_y;
+
+        corridors.push_back(Rectangle(Coordinate(corridor_start, top_node_wall_y), corridor_height, 1));
+    }
+    else {
+        cout << "This is a horizontal split" << endl;
+    }
 }
