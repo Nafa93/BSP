@@ -16,7 +16,7 @@ void Canvas::draw()
     }
 }
 
-void Canvas::add_rectangles(vector<Rectangle> rectangles)
+void Canvas::add_rectangles(vector<Rectangle> rectangles, char character)
 {
     for (int i = 0; i < rectangles.size(); i++)
     {
@@ -25,7 +25,7 @@ void Canvas::add_rectangles(vector<Rectangle> rectangles)
             for (int k = rectangles[i].origin.x; k < rectangles[i].origin.x + rectangles[i].width; k++)
             {
                 if (j == rectangles[i].origin.y || k == rectangles[i].origin.x || j == rectangles[i].origin.y + rectangles[i].height - 1 || k == rectangles[i].origin.x + rectangles[i].width - 1) {
-                    data[j][k] = '#';
+                    data[j][k] = character;
                 }
             }
         }

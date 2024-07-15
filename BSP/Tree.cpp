@@ -68,47 +68,71 @@ void Tree::generate_corridor(Node* origin, Node* end)
     bool is_vertical_split = origin->rectangle.origin.x == end->rectangle.origin.x;
 
     if (is_vertical_split) {
-        Node* top_node;
-        Node* bottom_node;
-
-        if (origin->rectangle.origin.y < end->rectangle.origin.y) {
-            top_node = origin;
-            bottom_node = end;
-        }
-        else {
-            top_node = end;
-            bottom_node = origin;
-        }
-
-        int top_node_wall_x_start = top_node->room.origin.x;
-        int top_node_wall_x_end = top_node->room.origin.x + top_node->room.width;
-        int top_node_wall_y = top_node->room.origin.y + top_node->room.height;
-
-        int bottom_node_wall_x_start = bottom_node->room.origin.x;
-        int bottom_node_wall_x_end = bottom_node->room.origin.x + bottom_node->room.width;
-        int bottom_node_wall_y = bottom_node->room.origin.y;
-
-        int top_node_wall_width = top_node_wall_x_end - top_node_wall_x_start;
-        int bottom_node_wall_width = bottom_node_wall_x_end - bottom_node_wall_x_start;
-
-        int corridor_start;
-
-        if (top_node_wall_x_start > bottom_node_wall_x_start) {
-            corridor_start = rng.generate(top_node_wall_x_start, bottom_node_wall_x_end);
-        }
-        else if (top_node_wall_x_start < bottom_node_wall_x_start) {
-            corridor_start = rng.generate(bottom_node_wall_x_start, top_node_wall_x_end);
-        }
-        else {
-            // z shaped corridor
-            corridor_start = 0;
-        }
-
-        int corridor_height = bottom_node_wall_y - top_node_wall_y;
-
-        corridors.push_back(Rectangle(Coordinate(corridor_start, top_node_wall_y), corridor_height, 1));
+        generate_vertical_corridor(origin, end);
     }
     else {
         cout << "This is a horizontal split" << endl;
+    }
+}
+
+void Tree::generate_vertical_corridor(Node* origin, Node* end)
+{
+    Node* top_node;
+    Node* bottom_node;
+
+    if (origin->rectangle.origin.y < end->rectangle.origin.y) {
+        top_node = origin;
+        bottom_node = end;
+    }
+    else {
+        top_node = end;
+        bottom_node = origin;
+    }
+
+    // Ensures corridor won't be at the wall
+    int offset = 2;
+
+    int top_node_wall_x_start = top_node->room.origin.x + offset;
+    int top_node_wall_x_end = top_node->room.origin.x + top_node->room.width - offset;
+    int top_node_wall_y = top_node->room.origin.y + top_node->room.height - 1;
+
+    int bottom_node_wall_x_start = bottom_node->room.origin.x + offset;
+    int bottom_node_wall_x_end = bottom_node->room.origin.x + bottom_node->room.width - offset;
+    int bottom_node_wall_y = bottom_node->room.origin.y + 1;
+
+    int corridor_height = (bottom_node_wall_y - top_node_wall_y);
+
+    if (top_node_wall_x_start < bottom_node_wall_x_start && top_node_wall_x_end > bottom_node_wall_x_end) {
+        int corridor_start = rng.generate(bottom_node_wall_x_start, bottom_node_wall_x_end);
+
+        corridors.push_back(Rectangle(Coordinate(corridor_start, top_node_wall_y), corridor_height, 1));
+    }
+    else if (bottom_node_wall_x_start < top_node_wall_x_start && bottom_node_wall_x_end > top_node_wall_x_end) {
+        int corridor_start = rng.generate(top_node_wall_x_start, top_node_wall_x_end);
+
+        corridors.push_back(Rectangle(Coordinate(corridor_start, top_node_wall_y), corridor_height, 1));
+    }
+    else if (top_node_wall_x_start > bottom_node_wall_x_end || top_node_wall_x_end < bottom_node_wall_x_start) {
+        int random_start = rng.generate(top_node_wall_x_start, top_node_wall_x_end);
+        int random_end = rng.generate(bottom_node_wall_x_start, bottom_node_wall_x_end);
+
+        // Maybe create a z shape
+        int first_section_height = corridor_height / 2;
+        int second_section_height = corridor_height - first_section_height;
+        corridors.push_back(Rectangle(Coordinate(random_start, top_node_wall_y), first_section_height, 1));
+        corridors.push_back(Rectangle(Coordinate(random_end, bottom_node_wall_y - second_section_height), second_section_height, 1));
+
+        int z_shape_start = min(random_start, random_end);
+        corridors.push_back(Rectangle(Coordinate(z_shape_start, bottom_node_wall_y - second_section_height), 1, abs(random_start - random_end) + 1));
+    }
+    else if (top_node_wall_x_start < bottom_node_wall_x_start) {
+        int corridor_start = rng.generate(bottom_node_wall_x_start, top_node_wall_x_end);
+
+        corridors.push_back(Rectangle(Coordinate(corridor_start, top_node_wall_y), corridor_height, 1));
+    }
+    else if (top_node_wall_x_start > bottom_node_wall_x_start) {
+        int corridor_start = rng.generate(top_node_wall_x_start, bottom_node_wall_x_end);
+
+        corridors.push_back(Rectangle(Coordinate(corridor_start, top_node_wall_y), corridor_height, 1));
     }
 }

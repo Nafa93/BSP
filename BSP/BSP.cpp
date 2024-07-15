@@ -26,9 +26,9 @@ int main()
 
     Canvas canvas(height, width);
 
-    canvas.add_rectangles(tree.rooms);
+    canvas.add_rectangles(tree.rooms, '#');
 
-    canvas.add_rectangles(tree.corridors);
+    canvas.add_rectangles(tree.corridors, '.');
 
     canvas.draw();
 
