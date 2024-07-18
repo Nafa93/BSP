@@ -25,10 +25,10 @@ int main()
     tree.generate_corridors(&tree.root);
 
     Canvas canvas(height, width);
-
+    
+    canvas.add_corridors(tree.corridors, '.');
+    
     canvas.add_rectangles(tree.rooms, '#');
-
-    canvas.add_rectangles(tree.corridors, '.');
 
     canvas.draw();
 
