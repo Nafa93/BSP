@@ -9,4 +9,8 @@ public:
     Coordinate origin;
     int height;
     int width;
+    Coordinate top_right_corner();
+    Coordinate top_left_corner();
+    Coordinate bottom_right_corner();
+    Coordinate bottom_left_corner();
 };
