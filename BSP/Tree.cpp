@@ -197,3 +197,14 @@ void Tree::generate_horizontal_corridor(Node* origin, Node* end) {
         corridors.push_back(Rectangle(Coordinate(left_wall_x, corridor_start), 1, corridor_width));
     }
 }
+
+void Tree::generate_corridors(Node* node) {
+    if (!node->left->has_children() && !node->right->has_children()) {
+        generate_corridor(node->left, node->right);
+        return;
+    }
+    else {
+        generate_corridors(node->left);
+        generate_corridors(node->right);
+    }
+}

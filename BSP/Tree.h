@@ -14,12 +14,13 @@ public:
     vector<Rectangle> areas;
     vector<Rectangle> corridors;
     vector<Node*> leaves;
+    void generate_corridors(Node* node);
 
-    void generate_corridor(Node* origin, Node* end);
 private:
     RandomNumberGenerator rng;
 
     void generate_room(Node* node);
     void generate_vertical_corridor(Node* origin, Node* end);
     void generate_horizontal_corridor(Node* origin, Node* end);
+    void generate_corridor(Node* origin, Node* end);
 };

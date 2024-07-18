@@ -10,4 +10,5 @@ public:
     Rectangle room;
     Node* left;
     Node* right;
+    bool has_children();
 };
